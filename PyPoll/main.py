@@ -1,43 +1,99 @@
-import csv 
+#Import os
+import os
 
-input_file = "Resources/election_data.csv.csv"
+#Import csv
+import csv
 
-candidate_list = 0
-candidate_votes = 0
+#Define file path to locate csv
+csvpath = os.path.join('PyPoll', 'Resources', 'election_data.csv')
 
-with open(input_file) as infile:
-        if candidate_name not in candidate_list:
+#Declare functions for formatting
+def separator():
+    print("--------------------------")
+def spacer():
+    print()
+def separate_spacer():
+    spacer()
+    separator()
+    spacer()
+       
+#Open csv and enable reader, store header row
+with open(csvpath) as csv_poll:
 
-            candidate_list.append(candidate_name)
+    csvreader = csv.reader(csv_poll, delimiter=',')
+    csv_header = next(csvreader)
 
-            candidate_votes[candidate_name] = 0
+#Establish variables and placeholders before looping
+    stockham = 'Charles Casper Stockham'
+    stockham_votes = 0
+    degette = 'Diana DeGette'
+    degette_votes = 0
+    doane = 'Raymon Anthony Doane'
+    doane_votes = 0
+    total_votes = 0
 
- candidate_votes[candidate_name] = candidate_votes[candidate_name] + 1
+#Loop through CSV
+    for row in csvreader:
+        if row[2] == stockham:
+            stockham_votes+= 1
+        elif row[2] == degette:
+            degette_votes+= 1
+        else:
+            doane_votes+= 1
+#Find total number votes
+    total_votes = stockham_votes + degette_votes + doane_votes
 
-with open(input_file) as infile:
-    rows = csv.reader(infile)
-    header = next(rows)
+#Stockham results
+    stockham_percentage = str(round(stockham_votes/total_votes,5)*100)
+    stockham_doane = (round(stockham_votes/total_votes,5)*100)
+    stockham_percentage_entry = str(stockham_percentage + "%")
+    stockham_vote_total = str(stockham_votes)
+    stockham_print_votes = str("(" + stockham_vote_total + ")")
+    stockham_entry = str(stockham + ":")
+    
+#Degette results
+    degette_percentage = str(round(degette_votes/total_votes,5)*100)
+    degette_doane = (round(degette_votes/total_votes,5)*100)
+    degette_percentage_entry = str(degette_percentage + "%")
+    degette_vote_total = str(degette_votes)
+    degette_print_votes = str("(" + degette_vote_total + ")")
+    degette_entry = str(degette + ":")
 
-    for row in rows:
-        total_month = total_month + 1
-        total_profit = total_profit + int(row[1])
+#Doane results
+    doane_percentage = str(round(100 - (degette_doane + stockham_doane), 5))
+    doane_percentage_entry = str(doane_percentage + "%")
+    doane_vote_total = str(doane_votes)
+    doane_print_votes = str("(" + doane_vote_total + ")")
+    doane_entry = str(doane + ":")
 
-print(total_profit)
+#Create dictionary for candidate vote counts
+    vote_count_dict = {stockham: stockham_votes, degette : degette_votes, doane : doane_votes}
 
-output = f"""
-Election Results
--------------------------
-Total Votes: 369711
--------------------------
-Charles Casper Stockham: 23.049% (85213)
-Diana DeGette: 73.812% (272892)
-Raymon Anthony Doane: 3.139% (11606)
--------------------------
-Winner: Diana DeGette
--------------------------
-"""
+#Define file path to locate and write in txtfile
+    txtpath = os.path.join('PyPoll','Analysis', 'poll_analysis.txt')
+    with open(txtpath, "w") as txtfile:
 
-print (output)
+#Print analysis in txtfile
+        print("Election Results", file = txtfile)
+        print(f"Total Votes: ", total_votes, file = txtfile)
+        print(stockham_entry, stockham_percentage_entry, stockham_print_votes, file = txtfile)
+        print(degette_entry, degette_percentage_entry, degette_print_votes, file = txtfile)
+        print(doane_entry, doane_percentage_entry, doane_print_votes, file = txtfile)
+        winner = max(vote_count_dict, key = vote_count_dict.get)
+        winner = str(winner)
+        print(f"Winner: ", winner, file = txtfile)
 
-with open("analysis/OutputFile.txt", "w") as outfile: 
-    outfile.write(output)
+#Print analysis with formatting to terminal
+    print("Election Results")
+    separate_spacer()
+    print(f"Total Votes: ", total_votes)
+    separate_spacer()
+    print(stockham_entry, stockham_percentage_entry, stockham_print_votes)
+    spacer()
+    print(degette_entry, degette_percentage_entry, degette_print_votes)
+    spacer()
+    print(doane_entry, doane_percentage_entry, doane_print_votes)
+    separate_spacer()
+    winner = max(vote_count_dict, key = vote_count_dict.get)
+    print(f"Winner: ", winner)
+    separate_spacer()
