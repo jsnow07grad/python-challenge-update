@@ -1,113 +1,88 @@
-<<<<<<< HEAD
-import csv 
+#Import os
+import os
 
-input_file = "Resources/budget_data.csv"
+#Import csv
+import csv
 
-total_month = 0
-total_profit = 0
-previous_profit = 0
-total_change = 0
-change = 0
-change_counter = 0
-greatest_increase = 0
-greatest_increase_month = ""
-greatest_decrease = 0
-greatest_decrease_month = ""
+#Define file path to locate csv
+csvpath = os.path.join('PyBank', 'Resources', 'budget_data.csv')
+#Declare functions for formatting
+def separator():
+    print("--------------------------")
+def spacer():
+    print()
+def separate_spacer():
+    spacer()
+    separator()
+    spacer()
 
-with open(input_file) as infile:
-    rows = csv.reader(infile)
-    header = next(rows)
+#Open csv and enable reader, store header row
+with open(csvpath) as csvfile:
 
-    for row in rows:
-        total_month = total_month + 1
-        total_profit = total_profit + int(row[1])
-        current_profit = int(row[1])
+    csvreader = csv.reader(csvfile, delimiter=',')
+    csv_header = next(csvreader)
+    
+#Store Profit/Loss values & Month values as separate lists
+    rows = [[row[0], int(row[1])] for row in csvreader if row]
+    months = [row[0] for row in rows]
 
-        if previous_profit != 0:
-            change = current_profit - previous_profit 
-            total_change = total_change + change
-            change_counter = change_counter + 1
+#Edit month list to remove first value
+    dict_month = months[1:]
 
-        previous_profit = current_profit
+#Establish variable for total months
+    total_months = len(months)
 
-        if change>greatest_increase: 
-            greatest_increase = change
-            greatest_increase_month = row[0]
+#Create list for profit/loss as integers
+    data = [int(row[1]) for row in rows]
 
-        if change<greatest_decrease:            
-           greatest_decrease = change
-           greatest_decrease_month = row[0]
- 
-print(round(total_change/change_counter,2))
+#Calculate find differences between profit/loss values and find sum
+    deltas = [x - data[i - 1] for i, x in enumerate(data)][1:]
+    total = sum(data)
 
-output = f"""
-Financial Analysis
-----------------------------
-Total Months: {total_month}
-Total: ${total_profit}
-Average Change: ${total_change/change_counter:.2f}
-Greatest Increase in Profits: {greatest_increase_month} (${greatest_increase})
-Greatest Decrease in Profits: {greatest_decrease_month} (${greatest_decrease})
-"""
+#Create min and max variables for profit/loss lists before zipping
+    max_val = max(deltas)
+    min_val = min(deltas)
 
-print (output)
+#Zip edited month list and change profit/loss list
+#Find months with greatest profit/loss
+    delta_dict = dict(zip(dict_month, deltas))
+    max = (max(delta_dict, key = delta_dict.get))
+    min = (min(delta_dict, key = delta_dict.get))
 
-with open("analysis/OutputFile.txt", "w") as outfile: 
-    outfile.write(output)
-=======
-import csv 
+#Establish variables to print data in string
+    total_print = str(total)
+    sum_deltas = sum(deltas)
+    avg_deltas = round(sum_deltas / len(deltas),2)
+    avg_deltas_print = str(avg_deltas)
+    max_mo = str(max)
+    min_mo = str(min)
+    max_val_print = str(max_val)
+    min_val_print = str(min_val)
+    print_max = str('(' + max_val_print + ')')
+    print_min = str('(' + min_val_print + ')')
 
-input_file = "Resources/budget_data.csv"
+#Define file path to locate and write in txt file 
+    txtpath = os.path.join('PyBank', 'Analysis', 'analysis_profitloss')
+    with open(txtpath, "w") as txtfile:
 
-total_month = 0
-total_profit = 0
-previous_profit = 0
-total_change = 0
-change = 0
-change_counter = 0
-greatest_increase = 0
-greatest_increase_month = ""
-greatest_decrease = 0
-greatest_decrease_month = ""
+#Print analysis with to txtfile
+        print("Financial Analysis", file = txtfile)
+        print(f"Total Months: ", total_months, file = txtfile)
+        print("Total: " + "$" + total_print, file = txtfile)
+        print("Average Change: " + "$" + avg_deltas_print, file = txtfile)
+        print("Greatest Increase in Profits: " + max_mo + " ($" + max_val_print + ")", file = txtfile)
+        print("Greatest Decrease in Profits: " + min_mo + " ($" + min_val_print + ")", file = txtfile)
 
-with open(input_file) as infile:
-    rows = csv.reader(infile)
-    header = next(rows)
-
-    for row in rows:
-        total_month = total_month + 1
-        total_profit = total_profit + int(row[1])
-        current_profit = int(row[1])
-
-        if previous_profit != 0:
-            change = current_profit - previous_profit 
-            total_change = total_change + change
-            change_counter = change_counter + 1
-
-        previous_profit = current_profit
-
-        if change>greatest_increase: 
-            greatest_increase = change
-            greatest_increase_month = row[0]
-
-        if change<greatest_decrease:            
-           greatest_decrease = change
-           greatest_decrease_month = row[0]
- 
-print(round(total_change/change_counter,2))
-
-output = f"""
-Financial Analysis
-----------------------------
-Total Months: {total_month}
-Total: ${total_profit}
-Average Change: ${total_change/change_counter:.2f}
-Greatest Increase in Profits: {greatest_increase_month} (${greatest_increase})
-Greatest Decrease in Profits: {greatest_decrease_month} (${greatest_decrease})
-"""
-
-print (output)
-
-with open("analysis/OutputFile.txt", "w") as outfile: 
-    outfile.write(output)
->>>>>>> 5046294fccbf8251642c041bff9c0aa27e8a1535
+#Print analysis with formatting to terminal
+    print("Financial Analysis")
+    separate_spacer()
+    print(f"Total Months: ", total_months)
+    spacer()
+    print("Total: " + "$" + total_print)
+    spacer()
+    print("Average Change: " + "$" + avg_deltas_print)
+    spacer()
+    print("Greatest Increase in Profits: " + max_mo + " ($" + max_val_print + ")")
+    spacer()
+    print("Greatest Decrease in Profits: " + min_mo + " ($" + min_val_print + ")")
+    spacer()
